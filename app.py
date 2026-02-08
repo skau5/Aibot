@@ -13,16 +13,18 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 memory = {}
 
-@app.route("/agent", methods=["POST"])
+@app.route("/agent", methods=["POST", "GET", "OPTIONS"])
 def agent():
     try:
         # Get the JSON data
-        data = request.get_json()
+        data = request.get_json(force=True, silent=True)
         
         # Check if data was received
         if data is None:
             return jsonify({
                 "error": "No JSON data received", 
+                "content_type": request.headers.get("Content-Type"),
+                "raw_data": request.get_data(as_text=True),
                 "debug": "request.get_json() returned None"
             }), 400
             
